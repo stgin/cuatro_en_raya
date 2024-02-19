@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<!DOCTYPE web-app PUBLIC "-//Sun Microsystems, Inc.//DTD Web Application 2.3//EN" "http://java.sun.com/dtd/web-app_2_3.dtd">
+<web-app>
+
+    <servlet>
+        <servlet-name>IniciarSesion</servlet-name>
+        <servlet-class>IniciarSesion</servlet-class>
+    </servlet>
+    <servlet>
+        <servlet-name>Registro</servlet-name>
+        <servlet-class>Registro</servlet-class>
+    </servlet>
+    <servlet>
+        <servlet-name>Inicio</servlet-name>
+        <servlet-class>Inicio</servlet-class>
+    </servlet>
+    <servlet>
+        <servlet-name>GetPartida</servlet-name>
+        <servlet-class>GetPartida</servlet-class>
+    </servlet>
+    <servlet>
+        <servlet-name>CrearPartida</servlet-name>
+        <servlet-class>CrearPartida</servlet-class>
+    </servlet>
+    <servlet>
+        <servlet-name>UnirseAPartida</servlet-name>
+        <servlet-class>UnirseAPartida</servlet-class>
+    </servlet>
+    <servlet>
+        <servlet-name>HacerMovimiento</servlet-name>
+        <servlet-class>HacerMovimiento</servlet-class>
+    </servlet>
+
+    <servlet-mapping>
+        <servlet-name>IniciarSesion</servlet-name>
+        <url-pattern>/iniciarsesion</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>Registro</servlet-name>
+        <url-pattern>/registro</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>Inicio</servlet-name>
+        <url-pattern>/inicio</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>GetPartida</servlet-name>
+        <url-pattern>/getpartida</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>CrearPartida</servlet-name>
+        <url-pattern>/crearpartida</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>UnirseAPartida</servlet-name>
+        <url-pattern>/unirseapartida</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>HacerMovimiento</servlet-name>
+        <url-pattern>/hacermovimiento</url-pattern>
+    </servlet-mapping>
+</web-app>

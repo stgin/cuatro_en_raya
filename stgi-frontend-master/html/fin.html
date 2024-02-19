@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fin de la Partida</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f2f2f2;
+        }
+        .container {
+            max-width: 600px;
+            margin: 100px auto;
+            padding: 20px;
+            background-color: #fff;
+            border-radius: 10px;
+            text-align: center;
+            box-shadow: 0px 0px 10px 0px rgba(0,0,0,0.5);
+        }
+        h1 {
+            color: #333;
+        }
+        .result {
+            margin-top: 30px;
+            font-size: 20px;
+        }
+        .winner {
+            color: green;
+        }
+        .loser {
+            color: red;
+        }
+        button {
+            margin-top: 30px;
+            padding: 10px 20px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+        button:hover {
+            background-color: #45a049;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Fin de la Partida</h1>
+        <div class="result" id="game-result">
+            <p>Cargando resultados...</p>
+        </div>
+        <button onclick="returnToHomePage()">OK</button>
+    </div>
+
+    <script>
+        // Función para obtener los resultados del backend
+        function getGameResults() {
+            fetch('http://localhost:8080/game_results')
+                .then(response => response.json())
+                .then(data => {
+                    // Actualizar el contenido con los resultados obtenidos del backend
+                    const resultElement = document.getElementById('game-result');
+                    resultElement.innerHTML = `
+                        <p><span class="winner">${data.winner.name}</span> ha ganado la partida!</p>
+                        <p><span class="loser">${data.loser.name}</span> ha perdido la partida.</p>
+                        <p>Puntos:</p>
+                        <p><span class="winner">${data.winner.name}:</span> ${data.winner.points} puntos</p>
+                        <p><span class="loser">${data.loser.name}:</span> ${data.loser.points} puntos</p>
+                    `;
+                })
+                .catch(error => {
+                    console.error('Error al obtener los resultados del backend:', error);
+                    // En caso de error, mostrar un mensaje de error en el DOM
+                    const resultElement = document.getElementById('game-result');
+                    resultElement.innerHTML = '<p>Error al cargar los resultados. Por favor, inténtalo de nuevo más tarde.</p>';
+                });
+        }
+
+        // Función para redirigir a la página de inicio
+        function returnToHomePage() {
+            alert("Volviendo a la página de inicio");
+            window.location.href = "pagina_inicio.html"; // Cambia esto por la URL de tu página de inicio
+        }
+
+        // Obtener los resultados al cargar la página
+        getGameResults();
+    </script>
+</body>
+</html>

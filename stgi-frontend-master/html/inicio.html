@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>INICIO</title>
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        background-color: #bfcedb;
+        /* Fondo de color sutil */
+      }
+
+      .container {
+        max-width: 800px;
+        margin: 0 auto;
+        padding: 20px;
+      }
+
+      .header {
+        text-align: center;
+      }
+
+      h1 {
+        font-family: Impact, Charcoal, sans-serif;
+        /* Tipo de letra para el título */
+        color: #2ba160;
+        /* Color del título */
+      }
+
+      .user-info {
+        float: left;
+        font-family: "Times New Roman", Times, serif;
+        /* Tipo de letra para el nombre de usuario */
+      }
+
+      .logout-button {
+        float: right;
+      }
+
+      .game-buttons {
+        text-align: center;
+        margin-top: 50px;
+      }
+
+      .game-button {
+        margin: 10px;
+        padding: 10px 20px;
+        background-color: #4caf50;
+        color: white;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+      }
+
+      .game-buttons-vertical {
+        text-align: center;
+        margin-top: 20px;
+      }
+
+      .game-button-vertical {
+        display: block;
+        margin: 5px auto;
+        padding: 10px 20px;
+        background-color: #4caf50;
+        color: white;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+      }
+    </style>
+  </head>
+
+  <body>
+    <div class="container">
+      <div class="header">
+        <h1>INICIO</h1>
+      </div>
+      <div class="user-info">
+        <p>Bienvenido, <span id="username">Usuario</span></p>
+      </div>
+      <div class="logout-button">
+        <button onclick="cerrarSesion()">Cerrar Sesión</button>
+      </div>
+      <div class="game-buttons">
+        <button class="game-button" onclick="crearPartida()">
+          Crear Nueva Partida
+        </button>
+        <input type="text" id="partidaIdInput" placeholder="ID de Partida" />
+        <button class="game-button" onclick="unirsePartida()">
+          Unirse a Partida
+        </button>
+      </div>
+      <div class="game-buttons-vertical" id="game-buttons-container"></div>
+    </div>
+
+    <script>
+      function cerrarSesion() {
+        // Aquí puedes añadir la lógica para cerrar sesión, como redirigir a una página de inicio de sesión.
+        alert("Sesión cerrada");
+      }
+
+      function crearPartida() {
+        // Envía una solicitud POST al backend para crear una nueva partida
+        fetch("http://localhost/myApp/crearpartida", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          credentials: "include",
+        })
+          .then((response) => {
+            // Verificar si la respuesta es OK
+            if (!response.ok) {
+              throw new Error(`HTTP error! Status: ${response.status}`);
+            }
+            // Si la respuesta es OK, convertirla a JSON
+            return response.json();
+          })
+          .then((data) => {
+            window.location.href = `/tablero.html?idPartida=${data.idPartida}`;
+          })
+          .catch((error) => {
+            console.error("Error:", error);
+            alert("Error al crear la partida");
+          });
+      }
+
+      function unirsePartida() {
+        // Obtener el ID de la partida desde el input
+        var partidaId = document.getElementById("partidaIdInput").value;
+
+        // Obtener el nombre de usuario desde el elemento en el DOM
+        var nombreUsuario = document.getElementById("username").innerText;
+
+        // Crear el objeto de datos a enviar en la solicitud
+        var data = {
+          partidaId: partidaId,
+          nombreUsuario: nombreUsuario,
+        };
+
+        // Realizar la solicitud POST al backend para unirse a la partida
+        fetch(
+          `http://localhost/myApp/unirseapartida?idPartida=${data.partidaId}`,
+          {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify(data),
+            credentials: "include", // Incluir credenciales en la solicitud si es necesario
+          }
+        )
+          .then((response) => {
+            // Verificar si la respuesta es OK
+            if (!response.ok) {
+              throw new Error(`HTTP error! Status: ${response.status}`);
+            }
+            // Si la respuesta es OK, convertirla a JSON
+            return response.json();
+          })
+          .then((responseData) => {
+            // Cambia 'data' a 'responseData'
+            window.location.href = `/tablero.html?idPartida=${responseData.idPartida}`; // Usa 'responseData' en lugar de 'data'
+          })
+          .catch((error) => {
+            console.error("Error:", error);
+            alert("Error al crear la partida");
+          });
+      }
+
+      // Función para generar botones de partida
+      function generarBotonesDePartida(partidas) {
+        const container = document.getElementById("game-buttons-container");
+
+        // Limpiar contenedor
+        container.innerHTML = "";
+
+        // Generar botones de partida
+        partidas.forEach((partida) => {
+          const button = document.createElement("button");
+          button.className = "game-button-vertical";
+          button.textContent =
+            "Partida " + partida.id + " - " + partida.oponente;
+          container.appendChild(button);
+        });
+      }
+
+      function fetchInicial() {
+        fetch("http://localhost/myApp/inicio", {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          credentials: "include",
+        })
+          .then((response) => {
+            // Verificar si la respuesta es OK
+            if (!response.ok) {
+              throw new Error(`HTTP error! Status: ${response.status}`);
+            }
+            // Si la respuesta es OK, convertirla a JSON
+            return response.json();
+          })
+          .then((data) => {
+            // Aquí puedes manejar los datos JSON recibidos
+            console.log(data);
+            // Por ejemplo, si esperas un objeto con el nombre del usuario y un array de juegos
+            // puedes hacer algo como esto:
+            const usernameElement = document.getElementById("username");
+            usernameElement.textContent = data.nombre;
+
+            const gameButtonsContainer = document.getElementById(
+              "game-buttons-container"
+            );
+            gameButtonsContainer.innerHTML = ""; // Limpiar el contenedor antes de agregar nuevos botones
+
+            data.juegos.forEach((juego) => {
+              const button = document.createElement("button");
+              button.textContent = `Juego ${juego.id} - Estado: ${juego.estado}`;
+              button.addEventListener("click", () => {
+                // Redirigir a la página del tablero con el ID del juego como parámetro
+                window.location.href = `/tablero.html?idPartida=${juego.id}`;
+              });
+              gameButtonsContainer.appendChild(button);
+            });
+          })
+          .catch((error) => {
+            console.error("Hubo un problema con la petición Fetch:", error);
+            // Mostrar un mensaje de error en la interfaz de usuario, si es necesario
+          });
+      }
+
+      // Llamada a la función fetchInicial al cargar la página
+      window.onload = fetchInicial;
+      // Llamar a la función para generar botones de partida con los datos proporcionados por el backend
+    </script>
+  </body>
+</html>

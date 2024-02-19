@@ -1,0 +1,366 @@
+<!DOCTYPE html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Juego de Cuatro en Raya</title>
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        margin: 0;
+        padding: 0;
+      }
+      .header {
+        background-color: #4caf50;
+        color: white;
+        padding: 10px;
+        text-align: center;
+      }
+      .exit {
+        position: absolute;
+        top: 10px;
+        right: 10px;
+        color: white;
+        font-size: 24px;
+        cursor: pointer;
+      }
+      .container {
+        display: flex;
+        justify-content: space-between;
+        padding: 20px;
+      }
+      .container-refresh {
+        display: flex;
+
+        justify-content: center;
+        align-items: center;
+      }
+      .user {
+        text-align: center;
+        font-weight: 700;
+        flex: 1;
+      }
+      .board {
+        display: flex;
+        justify-content: center;
+        margin-top: 20px;
+      }
+      .column {
+        margin: 0 10px;
+        text-align: center;
+      }
+      .hole {
+        width: 60px;
+        height: 60px;
+        background-color: #726f61; /* Color de las fichas */
+        border-radius: 50%;
+        margin-bottom: 10px;
+      }
+      .column button {
+        margin-top: 10px;
+        padding: 5px 10px;
+        cursor: pointer;
+        border: none;
+        background-color: transparent;
+        font-size: 14px;
+        color: #333;
+        border-radius: 5px;
+        width: 60px;
+        height: 30px;
+        transition: background-color 0.3s ease;
+      }
+      .column button:hover {
+        background-color: #eee;
+      }
+      .botones {
+        border-radius: 10px;
+        text-align: center;
+        color: #4caf50;
+        font-size: 15px;
+        font-weight: 400;
+        margin: 30px;
+      }
+      .botones button {
+        background-color: #9feba1;
+        border-radius: 5px;
+        border-width: 1px;
+        width: 25px;
+        height: 25px;
+      }
+      .resultado {
+        text-align: center;
+        margin-top: 50px; /* Ajusta el margen superior según sea necesario */
+      }
+      table {
+        border-collapse: collapse;
+        margin: auto;
+      }
+      table td {
+        width: 60px;
+        height: 60px;
+        border: 1px solid #ccc;
+        text-align: center;
+        background-color: #fff;
+        position: relative;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="header">
+      <h1 id="game-id">ID de Partida: Cargando...</h1>
+      <div class="exit" onclick="returnToGame()">✖</div>
+    </div>
+    <div class="container">
+      <div class="user" id="player1-info">
+        <h2>Jugador 1 - Turno: Cargando...</h2>
+        <p>Ficha: <span>Cargando...</span></p>
+      </div>
+      <div class="user" id="player2-info">
+        <h2>Jugador 2 - Turno: Cargando...</h2>
+        <p>Ficha: <span>Cargando...</span></p>
+      </div>
+    </div>
+    <div class="container-refresh">
+      <button onclick="initGame()">Actualizar para ver si es mi turno</button>
+    </div>
+    <div class="botones">
+      <table>
+        <tbody>
+          <tr>
+            <td>
+              <button onclick="dropPiece(1)">↓</button>
+            </td>
+            <td>
+              <button onclick="dropPiece(2)">↓</button>
+            </td>
+            <td>
+              <button onclick="dropPiece(3)">↓</button>
+            </td>
+            <td>
+              <button onclick="dropPiece(4)">↓</button>
+            </td>
+            <td>
+              <button onclick="dropPiece(5)">↓</button>
+            </td>
+            <td>
+              <button onclick="dropPiece(6)">↓</button>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="board">
+      <table id="game-board">
+        <!-- Tablero generado dinámicamente desde JavaScript -->
+      </table>
+    </div>
+    <script>
+      // Función para iniciar el juego
+      // Función para inicializar el juego con el ID obtenido de la URL
+      function initGame() {
+        const gameId = getGameIdFromUrl();
+        if (gameId) {
+          getPartida(gameId);
+        } else {
+          console.error("No se encontró el ID de la partida en la URL");
+        }
+      }
+
+      function getGameIdFromUrl() {
+        const urlParams = new URLSearchParams(window.location.search);
+        return urlParams.get("idPartida");
+      }
+      // function getPartida(gameId) {
+      //   fetch(`http://localhost/myApp/getpartida?idPartida=${gameId}`, {
+      //     method: "GET",
+      //     headers: {
+      //       "Content-Type": "application/json",
+      //     },
+      //     credentials: "include",
+      //   })
+      //     .then((response) => response.json())
+      //     .then((data) => {
+      //       document.getElementById("game-id").textContent =
+      //         "ID de Partida: " + data.idPartida;
+      //       document
+      //         .getElementById("player1-info")
+      //         .querySelector("h2").textContent =
+      //         "Jugador 1 - " +
+      //         data.nombreUsuario +
+      //         (data.esTurno ? " Su turno" : " Esperando");
+      //       document
+      //         .getElementById("player1-info")
+      //         .querySelector("span").textContent = data.colorJugador;
+
+      //       document
+      //         .getElementById("player2-info")
+      //         .querySelector("h2").textContent =
+      //         "Jugador 2 - " +
+      //         data.nombreContrincante +
+      //         (data.esTurno ? " Esperando" : " Su turno");
+      //       createBoard(data.estadoPartida);
+      //       document
+      //         .getElementById("player2-info")
+      //         .querySelector("span").textContent =
+      //         data.colorJugador == "azul" ? "rojo" : "azul";
+      //     })
+      //     .catch((error) => {
+      //       console.error("Error en el fetch a la partida:", error);
+      //     });
+      // }
+
+      function getPartida(gameId) {
+        fetch(`http://localhost/myApp/getpartida?idPartida=${gameId}`, {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          credentials: "include",
+        })
+          .then((response) => response.json())
+          .then((data) => {
+            document.getElementById("game-id").textContent =
+              "ID de Partida: " + data.idPartida;
+            if (data.estadoPartida === "terminada") {
+              mostrarResultados(data);
+            } else {
+              actualizarInfoJugadores(data);
+              if (data.estadoPartida !== "en curso") {
+                crearTablero(data.estadoPartida);
+              }
+            }
+          })
+          .catch((error) => {
+            console.error("Error en el fetch a la partida:", error);
+          });
+      }
+
+      function mostrarResultados(data) {
+        const resultadoHTML = `
+    <div class="resultado">
+      <h2>Partida Terminada</h2>
+      <p>Puntuación de ${data.nombreUsuario}: ${calcularPuntuacion(
+          data,
+          data.colorJugador
+        )}</p>
+      <p>Puntuación de ${data.nombreContrincante}: ${calcularPuntuacion(
+          data,
+          data.colorJugador === "rojo" ? "azul" : "rojo"
+        )}</p>
+      <p>Ganador: ${obtenerGanador(data)}</p>
+    </div>
+  `;
+        document.getElementById("player1-info").innerHTML = resultadoHTML;
+        document.getElementById("player2-info").innerHTML = "";
+
+        // Oculta el botón de actualizar y las flechas
+        document.querySelector(".container-refresh").style.display = "none";
+        document.querySelector(".botones").style.display = "none";
+      }
+
+      function calcularPuntuacion(data, color) {
+        const secuencia5 =
+          `puntos ${color} de 5` in data ? data[`puntos ${color} de 5`] : 0;
+        const secuencia4 =
+          `puntos ${color} de 4` in data ? data[`puntos ${color} de 4`] : 0;
+        const secuencia6 =
+          `puntos ${color} de 6` in data ? data[`puntos ${color} de 6`] : 0;
+        return secuencia5 * 2 + secuencia4 + secuencia6 * 3;
+      }
+
+      function actualizarInfoJugadores(data) {
+        const jugador1Info = document.getElementById("player1-info");
+        const jugador2Info = document.getElementById("player2-info");
+
+        jugador1Info.querySelector("h2").textContent = `Jugador 1 - ${
+          data.nombreUsuario
+        } ${data.esTurno ? "Su turno" : "Esperando"}`;
+        jugador1Info.querySelector("span").textContent = data.colorJugador;
+
+        jugador2Info.querySelector("h2").textContent = `Jugador 2 - ${
+          data.nombreContrincante
+        } ${data.esTurno ? "Esperando" : "Su turno"}`;
+        jugador2Info.querySelector("span").textContent =
+          data.colorJugador === "azul" ? "rojo" : "azul";
+      }
+
+      function obtenerGanador(data) {
+        const puntuacionUsuario = calcularPuntuacion(data, data.colorJugador);
+        const puntuacionContrincante = calcularPuntuacion(
+          data,
+          data.colorJugador === "rojo" ? "azul" : "rojo"
+        );
+        if (puntuacionUsuario > puntuacionContrincante) {
+          return data.nombreUsuario;
+        } else if (puntuacionContrincante > puntuacionUsuario) {
+          return data.nombreContrincante;
+        } else {
+          return "Empate";
+        }
+      }
+
+      function createBoard(boardData) {
+        const board = document.getElementById("game-board");
+        board.innerHTML = "";
+
+        // Asegúrate de que estás accediendo al array correcto que contiene los datos del tablero
+        const gameRows = boardData[0]; // Aquí accedemos al primer elemento del array, que es el array de filas
+
+        for (let row = gameRows.length - 1; row >= 0; row--) {
+          const tr = document.createElement("tr");
+
+          for (let col = 0; col < gameRows[row].length; col++) {
+            const td = document.createElement("td");
+            td.className = "hole";
+
+            if (gameRows[row][col] === "rojo") {
+              td.style.backgroundColor = "red";
+            } else if (gameRows[row][col] === "azul") {
+              td.style.backgroundColor = "blue";
+            } else {
+              td.style.backgroundColor = "#ddd";
+            }
+
+            tr.appendChild(td);
+          }
+
+          board.appendChild(tr);
+        }
+      }
+
+      function dropPiece(column) {
+        const idPartida = obtenerIdPartida();
+        const requestBody = {
+          idPartida: idPartida,
+          columna: column,
+        };
+
+        fetch("http://localhost/myApp/hacermovimiento", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          credentials: "include",
+          body: JSON.stringify(requestBody),
+        })
+          .then((response) => {
+            if (!response.ok) {
+              throw new Error("Hubo un problema al realizar el movimiento.");
+            }
+            getPartida(idPartida);
+            return response.json();
+          })
+          .catch((error) => {
+            console.error("Error al realizar el movimiento:", error);
+          });
+      }
+
+      function obtenerIdPartida() {
+        const urlParams = new URLSearchParams(window.location.search);
+        return urlParams.get("idPartida");
+      }
+
+      initGame();
+    </script>
+  </body>
+</html>
