@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cuatro en Raya </title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f2f2f2; /* Fondo de color sutil */
+        }
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 20px;
+            text-align: center;
+        }
+        h1 {
+            font-family: Impact, Charcoal, sans-serif;
+            font-size: 36px;
+            color: #629e6d; /* Color del título */
+        }
+        p {
+            font-family: Tahoma, Geneva, sans-serif;
+            font-size: 16px;
+            margin-bottom: 10px;
+        }
+        input[type="text"], input[type="password"], input[type="button"] {
+            padding: 8px;
+            border-radius: 5px;
+            border: 1px solid #ccc;
+        }
+        input[type="button"] {
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            cursor: pointer;
+        }
+        input[type="button"]:hover {
+            background-color: #45a049;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Cuatro en Raya </h1>
+
+        <!-- Formulario de inicio de sesión y registro -->
+        <form id="loginForm">
+            <p>Nombre:</p>
+            <input type="text" id="nombre" name="Nombre" placeholder="Ingrese su nombre">
+
+            <p>Contraseña:</p>
+            <input type="password" id="contrasena" name="Contraseña" placeholder="Ingrese su contraseña">
+
+            <p>
+                <input type="button" value="Registrar" class="fr-rounded" onclick="registrar()">
+                <input type="button" value="Entrar" class="fr-rounded" onclick="entrar()">
+            </p>
+        </form>
+    </div>
+
+    <script>
+        function registrar() {
+            var nombre = document.getElementById("nombre").value;
+            var contrasena = document.getElementById("contrasena").value;
+
+            // Realizar la solicitud POST al backend
+            fetch('http://localhost/myApp/registro', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ nombre: nombre, contrasena: contrasena })
+            })
+            .then(response => {
+                // Manejar la respuesta del servidor
+                if (response.ok) {
+                    console.log('Usuario registrado correctamente');
+                    // Aquí podrías redirigir al usuario a otra página si lo deseas
+                } else {
+                    console.error('Error al registrar usuario');
+                }
+            })
+            .catch(error => {
+                console.error('Error de red:', error);
+            });
+        }
+
+        function entrar() {
+            var nombre = document.getElementById("nombre").value;
+            var contrasena = document.getElementById("contrasena").value;
+
+            // Realizar la solicitud POST al backend
+            fetch('http://localhost/myApp/iniciarsesion', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    
+                },
+                credentials: 'include',
+                
+                body: JSON.stringify({ nombre: nombre, contrasena: contrasena })
+            })
+            .then(response => {
+                // Manejar la respuesta del servidor
+                if (response.ok) {
+                    console.log('Usuario autenticado correctamente');
+                    // Redirigir al usuario a la página de inicio
+                    window.location.href = "inicio.html";
+                } else {
+                    console.error('Error al autenticar usuario');
+                }
+            })
+            .catch(error => {
+                console.error('Error de red:', error);
+            });
+        }
+    </script>
+</body>
+</html>
